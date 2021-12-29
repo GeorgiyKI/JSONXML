@@ -11,21 +11,34 @@ namespace JSONXML
     {
         static async Task Main(string[] args)
         {
+            Console.WriteLine("Inter full path with file name.");
             string path = Console.ReadLine();
 
-            FileAbout fileInfo = new FileAbout(path);
+            FileWordsInfo fileInfo = new FileWordsInfo(path);
 
-            var options = new JsonSerializerOptions
-            {
-                Encoder = JavaScriptEncoder.Create(UnicodeRanges.All),
-                WriteIndented = true
-            };
+            Console.WriteLine();
 
-            using (FileStream fs = new FileStream(fileInfo.Name.Substring(0, fileInfo.Name.LastIndexOf('.')) + ".json", FileMode.Create))
+            try
             {
-                await JsonSerializer.SerializeAsync<FileAbout>(fs, fileInfo, options);
-                Console.WriteLine("Data has been saved to file");
+                var options = new JsonSerializerOptions
+                {
+                    Encoder = JavaScriptEncoder.Create(UnicodeRanges.All),
+                    WriteIndented = true
+                };
+
+                string name = fileInfo.Name.Substring(0, fileInfo.Name.LastIndexOf('.'));
+
+                using (FileStream fs = new FileStream(name + ".json", FileMode.Create))
+                {
+                    await JsonSerializer.SerializeAsync(fs, fileInfo, options);
+                    Console.WriteLine("Data has been saved to file");
+                }
             }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+           
         }
     }
 }

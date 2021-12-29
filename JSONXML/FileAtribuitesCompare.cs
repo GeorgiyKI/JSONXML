@@ -4,9 +4,9 @@ using System.Text;
 
 namespace JSONXML
 {
-    class FileAtribuitesCompare : IComparer<AFileAtribuites>
+    class FileAtribuitesCompare : IComparer<FileAtribuiteModel>
     {
-        public int Compare(AFileAtribuites p1, AFileAtribuites p2)
+        public int Compare(FileAtribuiteModel p1, FileAtribuiteModel p2)
         {
             if (p1.Count < p2.Count)
                 return 1;

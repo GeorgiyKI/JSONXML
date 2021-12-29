@@ -6,7 +6,7 @@ using System.Text;
 
 namespace JSONXML
 {
-    class FileAbout
+    class FileWordsInfo
     {
         public static readonly char[] seporators = {
                 '\u0020',
@@ -27,8 +27,7 @@ namespace JSONXML
                 '\u3000',
                 '\u2028',
                 '\u2029'};
-
-        string _path;
+        readonly string _path;
         public string Name { get; private set; }
         public int Size { get; private set; }
         public int CountLines { get; private set; }
@@ -38,18 +37,18 @@ namespace JSONXML
         public int PunctuationsCount { get; private set; }
         public string LongestWord { get; private set; } = String.Empty;
 
-        public List<AFileAtribuites> Words { get; private set; } = new List<AFileAtribuites>();
-        public List<AFileAtribuites> Letters { get; private set; } = new List<AFileAtribuites>();
+        public List<FileAtribuiteModel> Words { get; private set; } = new List<FileAtribuiteModel>();
+        public List<FileAtribuiteModel> Letters { get; private set; } = new List<FileAtribuiteModel>();
         public int NumbersCount { get; private set; }
         public int DigitsCount { get; private set; }
 
-        public FileAbout(string path)
+        public FileWordsInfo(string path)
         {
             _path = path;
-            Make(_path);
+            MakeModel(_path);
         }
 
-        private void Make(string path)
+        private void MakeModel(string path)
         {
             try
             {
@@ -58,6 +57,7 @@ namespace JSONXML
                     Name = path.Substring(path.LastIndexOf("\\") + 1);
 
                     string line;
+                    Console.WriteLine("Making model");
                     while ((line = sr.ReadLine()) != null)
                     {
                         Size += line.Length;
@@ -68,7 +68,7 @@ namespace JSONXML
                         for (int i = 0; i < words.Length; i++)
                         {
                             string word = string.Empty;
-                            bool isWord = IsWord(words[i], out word);
+                            bool isWord = TryParseWord(words[i], out word);
                             int? indexOfWord = isWord ? indexOfWordOrLetterInList(word, Words) : null;
 
                             if (isWord && word.IndexOf('-') != -1)
@@ -89,20 +89,17 @@ namespace JSONXML
                             {
                                 Words[(int)indexOfWord].Count++;
                                
-                                AddLettersOrNumbersFromInput(words[i], isWord: true);
+                                AddLettersOrNumbersFromInput(words[i]);
                             }
                             else
                             {
-                                if (LongestWord.Length < word.Length)
-                                {
-                                    LongestWord = word;
-                                }
+                                if (LongestWord.Length < word.Length) LongestWord = word;
 
-                                AFileAtribuites Fileword = new AFileAtribuites() { Value = word };
+                                FileAtribuiteModel Fileword = new FileAtribuiteModel() { Value = word };
 
                                 Words.Add(Fileword);
 
-                                AddLettersOrNumbersFromInput(words[i], isWord: true);
+                                AddLettersOrNumbersFromInput(words[i]);
                             }
                         }
                     }
@@ -111,6 +108,7 @@ namespace JSONXML
                     Letters.Sort(new FileAtribuitesCompare());
                     LettersCount = CountValue(Letters);
                     WordCount = CountValue(Words);
+                    Console.WriteLine("End making model");
                 }
             }
             catch (Exception ex)
@@ -120,10 +118,10 @@ namespace JSONXML
         
         }
 
-        private void AddLettersOrNumbersFromInput(string word, bool isWord = false)
+        private void AddLettersOrNumbersFromInput(string word)
         {
             for (int i = 0; i < word.Length; i++)
-            {
+            {   
                 if (char.IsLetterOrDigit(word[i]))
                 {
                     int indexOfLetter = indexOfWordOrLetterInList(word[i].ToString(), Letters);
@@ -138,7 +136,7 @@ namespace JSONXML
                     }
                     else
                     {
-                        AFileAtribuites letter = new AFileAtribuites() { Value = word[i].ToString() };
+                        FileAtribuiteModel letter = new FileAtribuiteModel() { Value = word[i].ToString() };
                         Letters.Add(letter);
                     }
                 }
@@ -149,7 +147,7 @@ namespace JSONXML
             }
         }
 
-        private bool IsWord(string iptut, out string word)
+        private bool TryParseWord(string iptut, out string word)
         {
             int indexFirstLetter = GetIndexOfFirstOrLastLetter(iptut, isLast: false);
             int indexLastLetter = GetIndexOfFirstOrLastLetter(iptut, isLast: true);
@@ -169,7 +167,7 @@ namespace JSONXML
                     }
                 }
 
-                word = iptut[indexFirstLetter..++indexLastLetter];
+                word = iptut[indexFirstLetter.. ++indexLastLetter];
                 return true;
             }
             else
@@ -199,7 +197,7 @@ namespace JSONXML
             return index;
         }
 
-        private int indexOfWordOrLetterInList(string word, List<AFileAtribuites> listOfIndexOfAFileAtribuites)
+        private int indexOfWordOrLetterInList(string word, List<FileAtribuiteModel> listOfIndexOfAFileAtribuites)
         {
             for (int i = 0; i < listOfIndexOfAFileAtribuites.Count; i++)
             {
@@ -209,7 +207,7 @@ namespace JSONXML
             return -1;
         }
 
-        int CountValue(List<AFileAtribuites> List)
+        int CountValue(List<FileAtribuiteModel> List)
         {
             int sum = 0;
             for (int i = 0; i < List.Count; i++)
