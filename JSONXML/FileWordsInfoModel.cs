@@ -6,7 +6,7 @@ using System.Text;
 
 namespace JSONXML
 {
-    class FileWordsInfo
+    class FileWordsInfoModel
     {
         public static readonly char[] seporators = {
                 '\u0020',
@@ -42,7 +42,7 @@ namespace JSONXML
         public int NumbersCount { get; private set; }
         public int DigitsCount { get; private set; }
 
-        public FileWordsInfo(string path)
+        public FileWordsInfoModel(string path)
         {
             _path = path;
             MakeModel(_path);

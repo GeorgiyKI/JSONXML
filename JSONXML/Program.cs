@@ -14,7 +14,7 @@ namespace JSONXML
             Console.WriteLine("Inter full path with file name.");
             string path = Console.ReadLine();
 
-            FileWordsInfo fileInfo = new FileWordsInfo(path);
+            FileWordsInfoModel fileInfo = new FileWordsInfoModel(path);
 
             Console.WriteLine();
 
