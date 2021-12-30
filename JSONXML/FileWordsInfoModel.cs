@@ -9,24 +9,27 @@ namespace JSONXML
     class FileWordsInfoModel
     {
         public static readonly char[] seporators = {
-                '\u0020',
-                '\u00A0',
-                '\u1680',
-                '\u2000',
-                '\u2001',
-                '\u2002',
-                '\u2003',
-                '\u2004',
-                '\u2006',
-                '\u2007',
-                '\u2008',
-                '\u2009',
-                '\u200A',
-                '\u202F',
-                '\u205F',
-                '\u3000',
-                '\u2028',
-                '\u2029'};
+                '\u0020', //SP. Space (SP)
+                '\u00A0', //NBSP. No-Break Space (NBSP)
+                '\u1680', //Ogham Space Mark.
+                '\u2000', //En Quad
+                '\u2001', //Em Quad
+                '\u2002', //En Space
+                '\u2003', //Em Space
+                '\u2004', //Three-Per-Em Space
+                '\u2005', //Four-Per-Em Space
+                '\u2006', //Six-Per-Em Space
+                '\u2007', //Fiqure space
+                '\u2008', //Punctuation space
+                '\u2009', //Thin space
+                '\u200A', //Hair space
+                '\u202F', //Narrow No-Break Space (NNBSP)
+                '\u205F', //Medium Mathematical Space (MMSP)
+                '\u3000', //Ideographic Space
+                '\u2028', //Line Separator
+                '\u2029'  //Paragraph Separator
+        };
+
         readonly string _path;
         public string Name { get; private set; }
         public int Size { get; private set; }
@@ -71,36 +74,34 @@ namespace JSONXML
                             bool isWord = TryParseWord(words[i], out word);
                             int? indexOfWord = isWord ? indexOfWordOrLetterInList(word, Words) : null;
 
-                            if (isWord && word.IndexOf('-') != -1)
-                            {
-                                WordsWithHyphen++;
-                            }
-
                             if (BigInt.TryParse(words[i], out _))
                             {
                                 NumbersCount++;
                                 DigitsCount += words[i].Length;
+                                continue;
                             }
-                            else if (!isWord)
+                            else if (isWord)
                             {
-                                AddLettersOrNumbersFromInput(words[i]);
-                            }
-                            else if (!(indexOfWord is null) && indexOfWord != -1)
-                            {
-                                Words[(int)indexOfWord].Count++;
-                               
-                                AddLettersOrNumbersFromInput(words[i]);
-                            }
-                            else
-                            {
-                                if (LongestWord.Length < word.Length) LongestWord = word;
+                                if (word.IndexOf('-') != -1)
+                                {
+                                    WordsWithHyphen++;
+                                }
 
-                                FileAtribuiteModel Fileword = new FileAtribuiteModel() { Value = word };
+                                if (indexOfWord != -1)
+                                {
+                                    Words[(int)indexOfWord].Count++;
+                                }
+                                else
+                                {
+                                    if (LongestWord.Length < word.Length) LongestWord = word;
 
-                                Words.Add(Fileword);
+                                    FileAtribuiteModel Fileword = new FileAtribuiteModel() { Value = word };
 
-                                AddLettersOrNumbersFromInput(words[i]);
+                                    Words.Add(Fileword);
+                                }
                             }
+
+                            AddLettersOrNumbersFromInput(words[i]);
                         }
                     }
 
@@ -160,7 +161,7 @@ namespace JSONXML
                     {
                         continue;
                     }
-                    else if (!char.IsLetter(iptut[i]))
+                    else if (!char.IsLetter(iptut[i])) // 12B is not a word 
                     {
                         word = iptut;
                         return false;
@@ -177,15 +178,15 @@ namespace JSONXML
             }
         }
 
-        private int GetIndexOfFirstOrLastLetter(string iptut, bool isLast)
+        private int GetIndexOfFirstOrLastLetter(string input, bool isLast)
         {
             int index = -1;
-            int lenght = iptut.Length;
+            int lenght = input.Length;
             int start = isLast ? lenght - 1 : 0;
 
             while (lenght-- > 0)
             {
-                if (char.IsLetter(iptut[start]))
+                if (char.IsLetter(input[start]))
                 {
                     index = start;
                     break;
